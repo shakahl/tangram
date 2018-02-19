@@ -20,6 +20,7 @@ attribute vec4 a_shape;
 attribute vec4 a_color;
 attribute vec2 a_texcoord;
 attribute vec2 a_offset;
+attribute float a_visible_at;
 
 uniform float u_point_type;
 
@@ -77,11 +78,18 @@ void main() {
     // Initialize globals
     #pragma tangram: setup
 
+    // float fade_time = clamp((u_visible_time - a_visible_at) * TANGRAM_FADE_IN_RATE/1., 0., 1.);
+    float fade_time = clamp((u_time - a_visible_at) * TANGRAM_FADE_IN_RATE/1., 0., 1.);
+    float fade_out = 0.;
+
     // discard hidden labels by collapsing into degenerate triangle
     #ifndef TANGRAM_SHOW_HIDDEN_LABELS
         if (a_shape.w == 0.) {
-            gl_Position = vec4(0., 0., 0., 1.);
-            return;
+            if (fade_time > 1.) {
+                gl_Position = vec4(0., 0., 0., 1.);
+                return;
+            }
+            fade_out = 1.;
         }
     #else
         // highlight hidden label in fragment shader for debugging
@@ -148,7 +156,17 @@ void main() {
     // Value passed to fragment shader in the v_alpha_factor varying
     #ifdef TANGRAM_FADE_IN_RATE
         if (u_tile_fade_in) {
-            v_alpha_factor *= clamp(u_visible_time * TANGRAM_FADE_IN_RATE, 0., 1.);
+            // v_alpha_factor *= clamp(u_visible_time * TANGRAM_FADE_IN_RATE, 0., 1.);
+            // v_alpha_factor *= clamp((u_time - a_visible_at) * TANGRAM_FADE_IN_RATE, 0., 1.);
+
+            // float fade_time = clamp((u_visible_time - a_visible_at) * TANGRAM_FADE_IN_RATE/1., 0., 1.);
+
+            if (fade_out == 0.) {
+                v_alpha_factor *= fade_time;
+            }
+            else {
+                v_alpha_factor *= clamp(1. - fade_time, 0., 1.);
+            }
         }
     #endif
 
@@ -157,7 +175,7 @@ void main() {
     // in proxy tiles are scaled down, they begin to overlap, and the fade is a simple way to ease the transition.
     // Value passed to fragment shader in the v_alpha_factor varying
     #ifdef TANGRAM_FADE_ON_ZOOM_OUT
-        v_alpha_factor *= clamp(1. + TANGRAM_FADE_ON_ZOOM_OUT_RATE * (u_map_position.z - u_tile_origin.z), 0., 1.);
+        // v_alpha_factor *= clamp(1. + TANGRAM_FADE_ON_ZOOM_OUT_RATE * (u_map_position.z - u_tile_origin.z), 0., 1.);
     #endif
 
     // World coordinates for 3d procedural textures

@@ -189,7 +189,7 @@ export default class TileManager {
             this.collision.task = {
                 type: 'tileManagerUpdateLabels',
                 run: (task) => {
-                    return mainThreadLabelCollisionPass(this.collision.tiles, this.collision.zoom, this.isLoadingVisibleTiles()).then(results => {
+                    return mainThreadLabelCollisionPass(this.collision.tiles, this.collision.zoom, this.isLoadingVisibleTiles(), this.scene.start_time).then(results => {
                         this.collision.task = null;
                         Task.finish(task, results);
                         this.updateTileStates().then(() => this.scene.immediateRedraw());

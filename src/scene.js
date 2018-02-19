@@ -1036,9 +1036,10 @@ export default class Scene {
     // Is scene currently animating?
     get animated () {
         // Use explicitly set scene animation flag if defined, otherwise enabled animation if any animated styles are in view
-        return (this.config.scene.animated !== undefined ?
-                this.config.scene.animated :
-                this.tile_manager.getActiveStyles().some(s => this.styles[s].animated));
+        // return (this.config.scene.animated !== undefined ?
+        //         this.config.scene.animated :
+        //         this.tile_manager.getActiveStyles().some(s => this.styles[s].animated));
+        return true; // TODO: placeholder until fixing fade timer on labels
     }
 
     // Get active camera - for public API

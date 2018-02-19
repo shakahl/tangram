@@ -565,6 +565,13 @@ export default class Tile {
             tile.proxied_as = (tile.style_zoom > this.style_zoom ? 'child' : 'parent');
         }
         else {
+            if (this.proxy_for) {
+                this.proxy_for.forEach(t => {
+                    if (t.proxied_as === 'child') {
+                        t.proxied_as = null;
+                    }
+                });
+            }
             this.proxy_for = null;
             this.proxy_depth = 0;
         }

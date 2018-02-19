@@ -63,7 +63,8 @@ Object.assign(Points, {
             { name: 'a_color', size: 4, type: gl.UNSIGNED_BYTE, normalized: true },
             { name: 'a_outline_color', size: 4, type: gl.UNSIGNED_BYTE, normalized: true, static: [0, 0, 0, 0] },
             { name: 'a_outline_edge', size: 1, type: gl.FLOAT, normalized: false, static: 0 },
-            { name: 'a_selection_color', size: 4, type: gl.UNSIGNED_BYTE, normalized: true }
+            { name: 'a_selection_color', size: 4, type: gl.UNSIGNED_BYTE, normalized: true },
+            { name: 'a_visible_at', size: 1, type: gl.FLOAT, normalized: false }
         ];
 
         this.vertex_layout = new VertexLayout(attribs);
@@ -630,6 +631,8 @@ Object.assign(Points, {
         if (this.selection) {
             this.fillVertexTemplate(vertex_layout, 'a_selection_color', Vector.mult(style.selection_color, 255), { size: 4 });
         }
+
+        this.fillVertexTemplate(vertex_layout, 'a_visible_at', 0, { size: 1 });
 
         return this.vertex_template;
     },
